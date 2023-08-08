@@ -1,0 +1,32 @@
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('https://cdn.pixabay.com/photo/2016/04/18/22/05/seashells-1337565_640.jpg'); /* Thay đổi đường dẫn đến ảnh nền */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-form {
+    background-color: rgba(255, 255, 255, 0.8); /* Thay đổi màu nền và độ mờ theo ý muốn */
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+}
+
+.error {
+    color: red;
+}
+
+label, input {
+    display: block;
+    margin: 10px;
+}
+
+button {
+    margin-top: 20px;
+}

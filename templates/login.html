@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">  <!-- Thêm dòng này để liên kết đến file CSS -->
+</head>
+<body>
+    <div class="login-form">
+        <h1>Login Page</h1>
+        <form method="POST">
+            <label for="phoneNumber">Phone Number:</label>
+            <input type="text" id="phoneNumber" name="phoneNumber">
+            <br>
+            {% if error %}
+                <span class="error">{{ error }}</span>
+                <br>
+            {% endif %}
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>
