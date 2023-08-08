@@ -63,19 +63,16 @@
                 <div class="label-row">
                     <div class="label-left">
                         <label for="output">Output:</label>
-                        <textarea id="output" name="output" rows="4" readonly>{{ data.output }}</textarea>
+                        <textarea class ="textarea_height" id="output" name="output" rows="4" readonly>{{ data.output }}</textarea>
                     </div>
                     <div class="label-right">
                         <label for="output_vi">Output (Vietnamese):</label>
-                        <textarea id="output_vi" name="output_vi" rows="4">{{ data_vi.output_vi }}</textarea>
+                        <textarea class ="textarea_height" id="output_vi" name="output_vi" rows="4">{{ data_vi.output_vi }}</textarea>
                     </div>
                 </div>
                 {% else %}
                 <p>No data available</p>
                 {% endif %}
-
-
-
                 <div class="action-btn">
                     <!-- Thêm button "Save" -->
                     <button type="submit" form="main_form" name="save_button" value="save"

@@ -83,6 +83,14 @@ def main():
             try:
                 # Attempt to update the status, modified date, and phone number of the data in the log
                 update_data_status(request.form['message_id'], 'submitted', session.get('phone_number'))
+
+
+                message_id = request.form['message_id']
+                instruction_vi = request.form['instruction_vi']
+                input_vi = request.form['input_vi']
+                output_vi = request.form['output_vi']
+
+                update_instruction_data(message_id, instruction_vi, input_vi, output_vi)
                 saved = True
             except Exception as e:
                 saved = False
@@ -92,6 +100,23 @@ def main():
     data, data_vi = get_random()
     return render_template('main.html', logged_in=session.get('logged_in'), phone_number=session.get('phone_number'),
                            data=data, data_vi=data_vi, saved=saved)
+
+
+def update_instruction_data(message_id, instruction_vi, input_vi, output_vi):
+    db_session = Session()
+    try:
+        db_session.query(InstructionDataset).filter_by(message_id=message_id,  lang='vi').update({
+            'instruction': instruction_vi,
+            'input': input_vi,
+            'output': output_vi
+        })
+        db_session.commit()
+    except Exception as e:
+        db_session.rollback()
+        raise e
+    finally:
+        db_session.close()
+
 
 def update_data_status(message_id, new_status, phone_number):
     db_session = Session()
@@ -103,18 +128,19 @@ def update_data_status(message_id, new_status, phone_number):
         db_session.query(LogInstructionDataset).filter_by(message_id=message_id).update({
             'status': new_status,
             'modified_date': local_time,
-            'phone_number': phone_number
+            'phone_number': phone_number,
         })
 
         db_session.commit()
     except Exception as e:
         db_session.rollback()
-        raise e
+        print("Error while updating status:", e)  # In ra thông tin lỗi
     finally:
         db_session.close()
 
 
-def save_data_to_log(message_id, phone_number, status):
+
+def update_log_data(message_id, phone_number, status):
     db_session = Session()
     try:
         utc_now = datetime.utcnow()
@@ -152,7 +178,7 @@ def get_random():
 
             # Nếu có dữ liệu ngẫu nhiên, lấy thêm một dòng khác có cùng message_id
             if random_data:
-                save_data_to_log(random_data.message_id, session.get('phone_number'), 'repairing')
+                update_log_data(random_data.message_id, session.get('phone_number'), 'repairing')
                 data_list = db_session.query(InstructionDataset).filter_by(message_id=random_data.message_id).limit(2).all()
 
 
@@ -183,16 +209,46 @@ def get_random():
 
     return data, data_vi
 
-
 @app.route('/log')
 def log():
     db_session = Session()
     try:
         log_data = db_session.query(LogInstructionDataset).all()
+        instruction_data = []  # Danh sách chứa thông tin từ instruction_dataset
+        for data in log_data:
+            query_result = db_session.query(InstructionDataset.lang, InstructionDataset.instruction, InstructionDataset.input, InstructionDataset.output).filter_by(message_id=data.message_id).all()
+            
+            instruction_en = {}
+            instruction_vi = {}
+            
+            for query_item in query_result:
+                if query_item.lang == 'en':
+                    instruction_en = {
+                        'instruction_en': query_item.instruction,
+                        'input_en': query_item.input,
+                        'output_en': query_item.output,
+                    }
+                else:
+                    instruction_vi = {
+                        'instruction_vi': query_item.instruction,
+                        'input_vi': query_item.input,
+                        'output_vi': query_item.output,
+                    }
+            
+            # Gộp dữ liệu từ cả hai ngôn ngữ vào một dict
+            instruction_combined = {
+                **instruction_en,
+                **instruction_vi
+            }
+            
+            instruction_data.append(instruction_combined)
+            
+        log_data_instruction = zip(log_data, instruction_data)  # Gộp dữ liệu log_data và instruction_data
     finally:
         db_session.close()
 
-    return render_template('log.html', log_data=log_data)
+    return render_template('log.html', log_data_instruction=log_data_instruction)
+
 
 
 if __name__ == '__main__':

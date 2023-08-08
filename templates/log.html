@@ -3,6 +3,7 @@
 
 <head>
     <title>Log Data</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='log.css') }}">  <!-- Thêm dòng này để liên kết đến file CSS -->
 </head>
 
 <body>
@@ -10,19 +11,51 @@
     <table>
         <thead>
             <tr>
-                <th>Message ID</th>
-                <th>Modified Date</th>
-                <th>Phone Number</th>
-                <th>Status</th>
+                <th class="small-column">Message ID</th>
+                <th class="small-column">Modified Date</th>
+                <th class="small-column">Phone Number</th>
+                <th>Data (English)</th>
+                <th>Data (Vietnamese)</th>
+                <th class="edit-column">Edit</th>
             </tr>
         </thead>
         <tbody>
-            {% for entry in log_data %}
+            {% for entry, instruction in log_data_instruction %}
             <tr>
-                <td>{{ entry.message_id }}</td>
-                <td>{{ entry.modified_date }}</td>
-                <td>{{ entry.phone_number }}</td>
-                <td>{{ entry.status }}</td>
+                <td class="small-column">{{ entry.message_id }}</td>
+                <td class="small-column">{{ entry.modified_date }}</td>
+                <td class="small-column">{{ entry.phone_number }}</td>
+                <td>
+                    <div class="input-container">
+                        <div class="input-title">Instruction:</div>
+                        <textarea disabled class="textarea_height_10" type="text" value="{{ instruction.instruction_en }}">{{ instruction.instruction_en }}</textarea>
+                    </div>
+                    <div class="input-container">
+                        <div class="input-title">Input:</div>
+                        <textarea disabled type="text" value="{{ instruction.input_en }}">{{ instruction.input_en }}</textarea>
+                    </div>
+                    <div class="input-container">
+                        <div class="input-title">Output:</div>
+                        <textarea disabled class="textarea_height_20" type="text" value="{{ instruction.output_en }}">{{ instruction.output_en }}</textarea>
+                    </div>
+                </td>
+                <td>
+                    <div class="input-container">
+                        <div class="input-title">Instruction:</div>
+                        <textarea class="textarea_height_10" type="text" value="{{ instruction.instruction_vi }}">{{ instruction.instruction_vi }}</textarea>
+                    </div>
+                    <div class="input-container">
+                        <div class="input-title">Input:</div>
+                        <textarea type="text" value="{{ instruction.input_vi }}">{{ instruction.input_vi }}</textarea>
+                    </div>
+                    <div class="input-container">
+                        <div class="input-title">Output:</div>
+                        <textarea class="textarea_height_20" type="text" value="{{ instruction.output_vi }}">{{ instruction.output_vi }}</textarea>
+                    </div>
+                </td>
+                <td class="edit-column">
+                    <button class="save-button">Save</button>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

@@ -1,0 +1,98 @@
+/* log.css */
+
+/* Import Bootstrap CSS */
+@import url('https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css');
+
+/* Custom styling for log.html */
+body {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+strong {
+    display: block;
+    margin-bottom: 8px;
+}
+
+textarea {
+    resize: none;
+}
+
+/* Add custom styles for input container */
+.input-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.input-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Add custom styles for small columns */
+.small-column {
+    width: 150px;
+}
+
+/* Add custom styles for edit column */
+.edit-column {
+    width: 150px;
+    text-align: center;
+}
+
+/* Add custom styles for save button */
+.save-button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}
+
+.textarea_height_20 {
+    height: 20vh;
+}
+
+.textarea_height_10 {
+    height: 10vh;
+}
+
+/* Media query for responsive layout */
+@media screen and (max-width: 600px) {
+    table {
+        width: 100%;
+    }
+
+    th, td {
+        display: block;
+        width: 100%;
+    }
+
+    th {
+        text-align: center;
+        background-color: #f2f2f2;
+    }
+}
