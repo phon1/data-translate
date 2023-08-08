@@ -4,6 +4,11 @@
 <head>
     <title>Random Sample Data</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <script>
+        function showAlert() {
+            alert("Save data successful");
+        }
+    </script>
 </head>
 
 <body>
@@ -69,26 +74,15 @@
                 <p>No data available</p>
                 {% endif %}
 
-                <!-- Hiển thị thông báo lưu thành công -->
-                {% if saved %}
-                <p>Data has been saved successfully.</p>
-                {% endif %}
 
-                <!-- Thêm button "Save" -->
+
                 <div class="action-btn">
-                    <button type="submit" form="main_form" name="save_button" value="save">Save</button>
+                    <!-- Thêm button "Save" -->
+                    <button type="submit" form="main_form" name="save_button" value="save"
+                        onclick="showAlert()">Save</button>
+                    <!-- Thêm button "Log" -->
+                    <a href="{{ url_for('log') }}" class="log-button">Log</a>
                 </div>
-                <!-- Hiển thị random value -->
-                {% if data %}
-                <div class="label-row">
-                    <div class="label-left">
-                        <label for="message_id">Random Message ID:</label>
-                        <input type="text" id="random_message_id" name="random_message_id"
-                            value="{{ data.random_message_id }}" readonly>
-                    </div>
-                </div>
-                {% endif %}
-
             </div>
         </div>
     </form>

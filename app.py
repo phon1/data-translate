@@ -89,10 +89,6 @@ def main():
                 # Handle the error, you might want to log it or show a user-friendly message
                 print("Error while updating data:", e)
 
-        session.pop('logged_in', None)
-        session.pop('phone_number', None)
-        return redirect(url_for('login'))
-
     data, data_vi = get_random()
     return render_template('main.html', logged_in=session.get('logged_in'), phone_number=session.get('phone_number'),
                            data=data, data_vi=data_vi, saved=saved)
