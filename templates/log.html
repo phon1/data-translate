@@ -3,7 +3,37 @@
 
 <head>
     <title>Log Data</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='log.css') }}">  <!-- Thêm dòng này để liên kết đến file CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='log.css') }}">
+    <!-- Thêm dòng này để liên kết đến file CSS -->
+    <script>
+        function showAlert(result) {
+            if (result === "success") {
+                alert("Save data successful");
+            } else {
+                alert("An error occurred. Please try again.");
+            }
+        }
+        function saveData(messageId) {
+            const instruction_vi = document.getElementById(`instruction_vi_${messageId}`).value;
+            const input_vi = document.getElementById(`input_vi_${messageId}`).value;
+            const output_vi = document.getElementById(`output_vi_${messageId}`).value;
+
+            const formData = new FormData();
+            formData.append('instruction_vi', instruction_vi);
+            formData.append('input_vi', input_vi);
+            formData.append('output_vi', output_vi);
+
+            fetch(`/update/${messageId}`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.text())
+                .then(result => showAlert(result));
+        }
+        function goBack() {
+            window.location.href = "{{ url_for('main') }}";  // Điều hướng quay lại trang main
+        }
+    </script>
 </head>
 
 <body>
@@ -28,38 +58,45 @@
                 <td>
                     <div class="input-container">
                         <div class="input-title">Instruction:</div>
-                        <textarea disabled class="textarea_height_10" type="text" value="{{ instruction.instruction_en }}">{{ instruction.instruction_en }}</textarea>
+                        <textarea disabled class="textarea_height_10" type="text"
+                            value="{{ instruction.instruction_en }}">{{ instruction.instruction_en }}</textarea>
                     </div>
                     <div class="input-container">
                         <div class="input-title">Input:</div>
-                        <textarea disabled type="text" value="{{ instruction.input_en }}">{{ instruction.input_en }}</textarea>
+                        <textarea disabled type="text"
+                            value="{{ instruction.input_en }}">{{ instruction.input_en }}</textarea>
                     </div>
                     <div class="input-container">
                         <div class="input-title">Output:</div>
-                        <textarea disabled class="textarea_height_20" type="text" value="{{ instruction.output_en }}">{{ instruction.output_en }}</textarea>
+                        <textarea disabled class="textarea_height_20" type="text"
+                            value="{{ instruction.output_en }}">{{ instruction.output_en }}</textarea>
                     </div>
                 </td>
                 <td>
                     <div class="input-container">
                         <div class="input-title">Instruction:</div>
-                        <textarea class="textarea_height_10" type="text" value="{{ instruction.instruction_vi }}">{{ instruction.instruction_vi }}</textarea>
+                        <textarea id="instruction_vi_{{ entry.message_id }}" class="textarea_height_10" type="text"
+                            value="{{ instruction.instruction_vi }}">{{ instruction.instruction_vi }}</textarea>
                     </div>
                     <div class="input-container">
                         <div class="input-title">Input:</div>
-                        <textarea type="text" value="{{ instruction.input_vi }}">{{ instruction.input_vi }}</textarea>
+                        <textarea id="input_vi_{{ entry.message_id }}" type="text"
+                            value="{{ instruction.input_vi }}">{{ instruction.input_vi }}</textarea>
                     </div>
                     <div class="input-container">
                         <div class="input-title">Output:</div>
-                        <textarea class="textarea_height_20" type="text" value="{{ instruction.output_vi }}">{{ instruction.output_vi }}</textarea>
+                        <textarea id="output_vi_{{ entry.message_id }}" class="textarea_height_20" type="text"
+                            value="{{ instruction.output_vi }}">{{ instruction.output_vi }}</textarea>
                     </div>
                 </td>
                 <td class="edit-column">
-                    <button class="save-button">Save</button>
+                    <button class="save-button" onclick="saveData('{{ entry.message_id }}')">Save</button>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    <button class="back-button" onclick="goBack()">Back to Main</button>
 </body>
 
 </html>

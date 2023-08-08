@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, redirect, url_for, session
 from sqlalchemy import create_engine, Column, Integer, String, TIMESTAMP
 from sqlalchemy.ext.declarative import declarative_base
@@ -140,7 +141,7 @@ def update_data_status(message_id, new_status, phone_number):
 
 
 
-def update_log_data(message_id, phone_number, status):
+def create_log_data(message_id, phone_number, status):
     db_session = Session()
     try:
         utc_now = datetime.utcnow()
@@ -178,7 +179,7 @@ def get_random():
 
             # Nếu có dữ liệu ngẫu nhiên, lấy thêm một dòng khác có cùng message_id
             if random_data:
-                update_log_data(random_data.message_id, session.get('phone_number'), 'repairing')
+                create_log_data(random_data.message_id, session.get('phone_number'), 'repairing')
                 data_list = db_session.query(InstructionDataset).filter_by(message_id=random_data.message_id).limit(2).all()
 
 
@@ -249,7 +250,26 @@ def log():
 
     return render_template('log.html', log_data_instruction=log_data_instruction)
 
+@app.route('/update/<message_id>', methods=['POST'])
+def save_data(message_id):
+    try:
+        if request.method == 'POST':
+            instruction_vi = request.form.get('instruction_vi')
+            input_vi = request.form.get('input_vi')
+            output_vi = request.form.get('output_vi')
 
+            # Cập nhật dữ liệu trong bảng instruction_dataset
+            update_instruction_data(message_id, instruction_vi, input_vi, output_vi)
 
+            # Cập nhật trạng thái và thời gian sửa đổi trong bảng log_instruction_dataset
+            update_data_status(message_id, 'submitted', session.get('phone_number'))
+
+            return "success"  # Trả về thông báo thành công
+        else:
+            return "error"  # Trả về thông báo lỗi nếu request.method không phải là POST
+    except Exception as e:
+        print("Error while saving data:", e)
+        return "error"  # Trả về thông báo lỗi nếu có lỗi xảy ra
+    
 if __name__ == '__main__':
     app.run(debug=True)

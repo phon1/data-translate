@@ -34,13 +34,20 @@ textarea {
     resize: none;
 }
 
-/* Add custom styles for input container */
-.input-container {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #ddd;
-    padding: 10px;
+thead {
+    position: sticky;
+    top: 0;
+    background-color: #f2f2f2;
 }
+
+thead th {
+    font-weight: bold;
+    text-align: left;
+    padding: 8px;
+}
+
+
+/* Add custom styles for input container */
 
 .input-title {
     font-weight: bold;
@@ -78,6 +85,21 @@ textarea {
 
 .textarea_height_10 {
     height: 10vh;
+}
+
+.back-button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.back-button:hover {
+    background-color: #2980b9;
 }
 
 /* Media query for responsive layout */
