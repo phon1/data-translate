@@ -66,6 +66,10 @@ input[type="submit"]:active {
     margin-bottom: 20px;
 }
 
+textarea {
+    resize: none;
+}
+
 .label-row {
     display: flex;
     align-items: center;

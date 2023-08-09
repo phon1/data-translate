@@ -33,6 +33,23 @@
         function goBack() {
             window.location.href = "{{ url_for('main') }}";  // Điều hướng quay lại trang main
         }
+        function deleteData(messageId) {
+            if (confirm("Are you sure you want to delete this data?")) {
+                fetch(`/delete/${messageId}`, {
+                    method: 'POST'
+                })
+                    .then(response => response.text())
+                    .then(result => {
+                        if (result === "success") {
+                            alert("Data deleted successfully");
+                            location.reload(); // Refresh the page after deletion
+                        } else {
+                            alert("An error occurred. Please try again.");
+                        }
+                    });
+            }
+        }
+
     </script>
 </head>
 
@@ -91,6 +108,7 @@
                 </td>
                 <td class="edit-column">
                     <button class="save-button" onclick="saveData('{{ entry.message_id }}')">Save</button>
+                    <button class="save-button" onclick="deleteData('{{ entry.message_id }}')">Delete</button>
                 </td>
             </tr>
             {% endfor %}

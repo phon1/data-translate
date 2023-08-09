@@ -214,7 +214,7 @@ def get_random():
 def log():
     db_session = Session()
     try:
-        log_data = db_session.query(LogInstructionDataset).all()
+        log_data = db_session.query(LogInstructionDataset).filter_by(status='submitted').all()
         instruction_data = []  # Danh sách chứa thông tin từ instruction_dataset
         for data in log_data:
             query_result = db_session.query(InstructionDataset.lang, InstructionDataset.instruction, InstructionDataset.input, InstructionDataset.output).filter_by(message_id=data.message_id).all()
@@ -271,5 +271,20 @@ def save_data(message_id):
         print("Error while saving data:", e)
         return "error"  # Trả về thông báo lỗi nếu có lỗi xảy ra
     
+@app.route('/delete/<message_id>', methods=['POST'])
+def delete_data(message_id):
+    try:
+        db_session = Session()
+        # Delete data from log_instruction_dataset 
+        db_session.query(LogInstructionDataset).filter_by(message_id=message_id).delete()
+        db_session.commit()
+        return "success"  # Return success message if deletion is successful
+    except Exception as e:
+        print("Error while deleting data:", e)
+        return "error"  # Return error message if there's an error during deletion
+    finally:
+        db_session.close()
+
+
 if __name__ == '__main__':
     app.run(debug=True)
