@@ -1,5 +1,6 @@
 
 from flask import Flask, render_template, request, redirect, url_for, session
+from flask_paginate import Pagination, get_page_args
 from sqlalchemy import create_engine, Column, Integer, String, TIMESTAMP
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -210,18 +211,23 @@ def get_random():
 
     return data, data_vi
 
-@app.route('/log')
+@app.route('/log', methods=['GET', 'POST'])
 def log():
     db_session = Session()
     try:
-        log_data = db_session.query(LogInstructionDataset).filter_by(status='submitted').all()
+        # Get page and per_page from query string or use default values
+        page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+
+        log_data = db_session.query(LogInstructionDataset).filter_by(status='submitted').order_by(LogInstructionDataset.modified_date.desc()).offset(offset).limit(per_page).all()
+        total = db_session.query(LogInstructionDataset).filter_by(status='submitted').count()
+
         instruction_data = []  # Danh sách chứa thông tin từ instruction_dataset
         for data in log_data:
             query_result = db_session.query(InstructionDataset.lang, InstructionDataset.instruction, InstructionDataset.input, InstructionDataset.output).filter_by(message_id=data.message_id).all()
-            
+
             instruction_en = {}
             instruction_vi = {}
-            
+
             for query_item in query_result:
                 if query_item.lang == 'en':
                     instruction_en = {
@@ -235,20 +241,24 @@ def log():
                         'input_vi': query_item.input,
                         'output_vi': query_item.output,
                     }
-            
+
             # Gộp dữ liệu từ cả hai ngôn ngữ vào một dict
             instruction_combined = {
                 **instruction_en,
                 **instruction_vi
             }
-            
+
             instruction_data.append(instruction_combined)
-            
+
         log_data_instruction = zip(log_data, instruction_data)  # Gộp dữ liệu log_data và instruction_data
+        
+        # Create a Pagination object
+        pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+        
     finally:
         db_session.close()
 
-    return render_template('log.html', log_data_instruction=log_data_instruction)
+    return render_template('log.html', log_data_instruction=log_data_instruction, pagination=pagination)
 
 @app.route('/update/<message_id>', methods=['POST'])
 def save_data(message_id):
