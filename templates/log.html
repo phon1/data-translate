@@ -55,6 +55,12 @@
 
 <body>
     <h1>Log Data</h1>
+    <div class="search-container">
+        <form action="{{ url_for('log') }}" method="GET">
+            <input type="text" name="search" placeholder="Search by Message ID" value="{{ search_query }}">
+            <button type="submit">Search</button>
+        </form>
+    </div>
     <table>
         <thead>
             <tr>

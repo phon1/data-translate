@@ -215,11 +215,15 @@ def get_random():
 def log():
     db_session = Session()
     try:
+        search_query = request.args.get('search', '')  # Lấy giá trị tìm kiếm từ query string
+
         # Get page and per_page from query string or use default values
         page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
 
-        log_data = db_session.query(LogInstructionDataset).filter_by(status='submitted').order_by(LogInstructionDataset.modified_date.desc()).offset(offset).limit(per_page).all()
-        total = db_session.query(LogInstructionDataset).filter_by(status='submitted').count()
+        # Tìm kiếm trong bảng LogInstructionDataset và chỉ hiển thị các dòng với message_id chứa search_query
+        log_data = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.message_id.like(f'%{search_query}%')).order_by(LogInstructionDataset.modified_date.desc()).offset(offset).limit(per_page).all()
+
+        total = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.message_id.like(f'%{search_query}%')).count()
 
         instruction_data = []  # Danh sách chứa thông tin từ instruction_dataset
         for data in log_data:
@@ -251,14 +255,13 @@ def log():
             instruction_data.append(instruction_combined)
 
         log_data_instruction = zip(log_data, instruction_data)  # Gộp dữ liệu log_data và instruction_data
-        
+
         # Create a Pagination object
         pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-        
     finally:
         db_session.close()
 
-    return render_template('log.html', log_data_instruction=log_data_instruction, pagination=pagination)
+    return render_template('log.html', log_data_instruction=log_data_instruction, pagination=pagination, search_query=search_query)
 
 @app.route('/update/<message_id>', methods=['POST'])
 def save_data(message_id):

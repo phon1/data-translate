@@ -137,6 +137,34 @@ thead th {
     padding: 5px;
 }
 
+/* Định dạng cho container của form tìm kiếm */
+.search-container {
+    margin: 20px 0;
+    text-align: left;
+}
+
+/* Định dạng cho input tìm kiếm */
+.search-container input[type="text"] {
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Định dạng cho nút tìm kiếm */
+.search-container button {
+    padding: 6px 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Khi di chuột vào nút tìm kiếm */
+.search-container button:hover {
+    background-color: #0056b3;
+}
+
 /* Media query for responsive layout */
 @media screen and (max-width: 600px) {
     table {
