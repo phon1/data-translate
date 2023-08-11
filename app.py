@@ -183,28 +183,45 @@ def get_random():
                 create_log_data(random_data.message_id, session.get('phone_number'), 'repairing')
                 data_list = db_session.query(InstructionDataset).filter_by(message_id=random_data.message_id).limit(2).all()
 
+        #Câu lệnh kiểm tra nếu data_list có 2 phần tử
+        if data_list and len(data_list) == 2:
+            if data_list[0].lang == 'en':
+                data = data_list[0]
+                data_vi = data_list[1]
+            else:
+                data = data_list[1]
+                data_vi = data_list[0]
 
-        if data_list[0].lang == 'en':
-            data = data_list[0]
-            data_vi = data_list[1]
+            if data:
+                data = {
+                    'message_id': data.message_id,
+                    'instruction': data.instruction,
+                    'input': data.input,
+                    'output': data.output,
+                }
+            if data_vi:
+                data_vi = {
+                    'id': data_vi.id,
+                    'message_id': data_vi.message_id,
+                    'instruction_vi': data_vi.instruction,
+                    'input_vi': data_vi.input,
+                    'output_vi': data_vi.output,
+                }
+        # Trường hợp data_en rỗng
         else:
-            data = data_list[1]
             data_vi = data_list[0]
-
-        if data:
             data = {
-                'message_id': data.message_id,
-                'instruction': data.instruction,
-                'input': data.input,
-                'output': data.output,
-            }
-        if data_vi:
+                    'message_id': data_list[0].message_id,
+                    'instruction': '',
+                    'input': '',
+                    'output': '',
+            }                      
             data_vi = {
-                'id': data_vi.id,
-                'message_id': data_vi.message_id,
-                'instruction_vi': data_vi.instruction,
-                'input_vi': data_vi.input,
-                'output_vi': data_vi.output,
+                    'id': data_vi.id,
+                    'message_id': data_vi.message_id,
+                    'instruction_vi': data_vi.instruction,
+                    'input_vi': data_vi.input,
+                    'output_vi': data_vi.output,
             }
     finally:
         db_session.close()
@@ -221,7 +238,7 @@ def log():
         page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
 
         # Tìm kiếm trong bảng LogInstructionDataset và chỉ hiển thị các dòng với message_id chứa search_query
-        log_data = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.message_id.like(f'%{search_query}%')).order_by(LogInstructionDataset.modified_date.desc()).offset(offset).limit(per_page).all()
+        log_data = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.message_id.like(f'%{search_query}%'),  LogInstructionDataset.status == 'submitted').order_by(LogInstructionDataset.modified_date.desc()).offset(offset).limit(per_page).all()
 
         total = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.message_id.like(f'%{search_query}%')).count()
 
@@ -300,4 +317,4 @@ def delete_data(message_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='192.168.1.11', port=5000)
