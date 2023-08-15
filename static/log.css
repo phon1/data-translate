@@ -165,6 +165,41 @@ thead th {
     background-color: #0056b3;
 }
 
+/* Custom styling for submitted-count */
+.submitted-count {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Custom styling for action-bar */
+.action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+/* Custom styling for action-bar */
+.action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+/* Custom styling for back-button-container */
+.back-button-container {
+    display: flex;
+    align-items: center;
+    margin-right: 10px; /* Thêm khoảng cách ở bên phải */
+}
+
+/* Custom styling for submitted-count */
+.submitted-count {
+    margin-left: 10px; /* Thêm khoảng cách ở bên trái */
+}
+
 /* Media query for responsive layout */
 @media screen and (max-width: 600px) {
     table {

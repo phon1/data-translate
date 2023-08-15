@@ -25,6 +25,7 @@ engine = create_engine(f'postgresql://{db_user}:{db_password}@{db_host}:{db_port
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
+count_submited_phone = 0  # Đặt một giá trị mặc định ban đầu
 
 class InstructionDataset(Base):
     __tablename__ = 'instruction_dataset'
@@ -248,7 +249,7 @@ def log():
         # Tìm kiếm trong bảng LogInstructionDataset và chỉ hiển thị các dòng với message_id chứa search_query
         log_data = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.message_id.like(f'%{search_query}%'),  LogInstructionDataset.status == 'submitted', LogInstructionDataset.phone_number==session.get('phone_number')).order_by(LogInstructionDataset.modified_date.desc()).offset(offset).limit(per_page).all()
 
-        total = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.message_id.like(f'%{search_query}%')).count()
+        total = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.message_id.like(f'%{search_query}%'), LogInstructionDataset.status == 'submitted', LogInstructionDataset.phone_number==session.get('phone_number')).count()
 
         instruction_data = []  # Danh sách chứa thông tin từ instruction_dataset
         for data in log_data:
@@ -283,10 +284,15 @@ def log():
 
         # Create a Pagination object
         pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+
+        #count submit phone login
+        global count_submited_phone  # Khi bạn muốn thay đổi biến toàn cục trong một hàm
+        count_submited_phone = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.status.like('%submitted%'), LogInstructionDataset.phone_number==session.get('phone_number')).count()
+
     finally:
         db_session.close()
 
-    return render_template('log.html', log_data_instruction=log_data_instruction, pagination=pagination, search_query=search_query)
+    return render_template('log.html', log_data_instruction=log_data_instruction, pagination=pagination, search_query=search_query, count_submited_phone=count_submited_phone)
 
 @app.route('/update/<message_id>', methods=['POST'])
 def save_data(message_id):
