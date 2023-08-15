@@ -5,6 +5,7 @@ from sqlalchemy import create_engine, Column, Integer, String, TIMESTAMP
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta
+from sqlalchemy.sql import exists
 from sqlalchemy import func  
 
 import random
@@ -168,20 +169,27 @@ def get_random():
     try:
         # Lấy thông tin từ bảng log_instruction_dataset
         repairing_entry = db_session.query(LogInstructionDataset).filter_by(status='repairing', phone_number=session.get('phone_number')).first()
+        
         if repairing_entry:
             data_list = db_session.query(InstructionDataset).filter_by(message_id=repairing_entry.message_id).all()
         else:
-            # Nếu trạng thái không phải "repairing", tìm dữ liệu ngẫu nhiên với điều kiện message_id không trùng với status "submitted"
-            table_submit = db_session.query(LogInstructionDataset.message_id).filter(LogInstructionDataset.status.like('%submitted%')).all()
-            submitted_message_ids = [item[0] for item in table_submit]
+            # Tạo subquery để lấy các message_id đã submitted
+            submitted_message_subquery = db_session.query(LogInstructionDataset.message_id).filter(LogInstructionDataset.status.like('%submitted%')).subquery()
+            
+            # Lấy dữ liệu ngẫu nhiên không trùng với các message_id đã submitted
+            random_data = db_session.query(InstructionDataset)\
+                .filter(~InstructionDataset.message_id.in_(submitted_message_subquery))\
+                .order_by(func.random())\
+                .first()
 
-            # Lấy dữ liệu ngẫu nhiên không trùng với submitted_message_ids
-            random_data = db_session.query(InstructionDataset).filter(InstructionDataset.message_id.notin_(submitted_message_ids)).order_by(func.random()).first()
-
-            # Nếu có dữ liệu ngẫu nhiên, lấy thêm một dòng khác có cùng message_id
             if random_data:
                 create_log_data(random_data.message_id, session.get('phone_number'), 'repairing')
-                data_list = db_session.query(InstructionDataset).filter_by(message_id=random_data.message_id).limit(2).all()
+                
+                # Lấy các bản ghi có cùng message_id
+                data_list = db_session.query(InstructionDataset)\
+                    .filter_by(message_id=random_data.message_id)\
+                    .limit(2)\
+                    .all()
 
         #Câu lệnh kiểm tra nếu data_list có 2 phần tử
         if data_list and len(data_list) == 2:
@@ -317,4 +325,4 @@ def delete_data(message_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='192.168.1.11', port=5000)
+    app.run(debug=True, host='192.168.1.15', port=5000)

@@ -285,3 +285,43 @@ form {
 .textarea_height{
     height : 15vh;
 }
+
+/* ... (your existing styles) ... */
+
+.centered-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Style for the "Save" button */
+.centered-buttons button,
+.centered-buttons .log-button {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 16px;
+    text-decoration: none;
+    margin-top: 10px;
+}
+
+.centered-buttons button:hover,
+.centered-buttons .log-button:hover {
+    background-color: #0056b3;
+}
+
+.centered-buttons button:focus,
+.centered-buttons .log-button:focus {
+    outline: none;
+}
+
+.centered-buttons button:active,
+.centered-buttons .log-button:active {
+    background-color: #004080;
+}

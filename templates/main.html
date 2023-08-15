@@ -73,10 +73,9 @@
                 {% else %}
                 <p>No data available</p>
                 {% endif %}
-                <div class="action-btn">
+                <div class="centered-buttons">
                     <!-- Thêm button "Save" -->
-                    <button type="submit" form="main_form" name="save_button" value="save"
-                        onclick="showAlert()">Save</button>
+                    <button type="submit" form="main_form" name="save_button" value="save" onclick="showAlert()">Save</button>
                     <!-- Thêm button "Log" -->
                     <a href="{{ url_for('log') }}" class="log-button">Log</a>
                 </div>
