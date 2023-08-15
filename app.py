@@ -246,7 +246,7 @@ def log():
         page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
 
         # Tìm kiếm trong bảng LogInstructionDataset và chỉ hiển thị các dòng với message_id chứa search_query
-        log_data = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.message_id.like(f'%{search_query}%'),  LogInstructionDataset.status == 'submitted').order_by(LogInstructionDataset.modified_date.desc()).offset(offset).limit(per_page).all()
+        log_data = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.message_id.like(f'%{search_query}%'),  LogInstructionDataset.status == 'submitted', LogInstructionDataset.phone_number==session.get('phone_number')).order_by(LogInstructionDataset.modified_date.desc()).offset(offset).limit(per_page).all()
 
         total = db_session.query(LogInstructionDataset).filter(LogInstructionDataset.message_id.like(f'%{search_query}%')).count()
 
