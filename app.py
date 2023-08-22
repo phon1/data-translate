@@ -174,14 +174,14 @@ def get_random():
         if repairing_entry:
             data_list = db_session.query(InstructionDataset).filter_by(message_id=repairing_entry.message_id).all()
         else:
-            # Tạo subquery để lấy các message_id đã submitted
-            submitted_message_subquery = db_session.query(LogInstructionDataset.message_id).filter(LogInstructionDataset.status.like('%submitted%')).subquery()
-            
-            # Lấy dữ liệu ngẫu nhiên không trùng với các message_id đã submitted
-            random_data = db_session.query(InstructionDataset)\
-                .filter(~InstructionDataset.message_id.in_(submitted_message_subquery))\
-                .order_by(func.random())\
-                .first()
+            # LEFT JOIN để loại bỏ các message_id đã submitted
+            query = db_session.query(InstructionDataset)\
+                            .outerjoin(LogInstructionDataset, (InstructionDataset.message_id == LogInstructionDataset.message_id) & (LogInstructionDataset.status.like('%submitted%')))\
+                            .filter(LogInstructionDataset.message_id.is_(None))\
+                            .order_by(func.random())\
+                            .limit(1)
+
+            random_data = query.first()
 
             if random_data:
                 create_log_data(random_data.message_id, session.get('phone_number'), 'repairing')
