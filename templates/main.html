@@ -4,6 +4,34 @@
 <head>
     <title>Random Sample Data</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const skipButton = document.querySelector('[name="skip_button"]');
+    
+            if (skipButton) {
+                skipButton.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    const message_id = document.getElementById('message_id').value;
+    
+                    // Gửi yêu cầu POST tới route /skip/message_id
+                    fetch(`/skip/${message_id}`, { method: 'POST' })
+                        .then(response => response.text())
+                        .then(result => {
+                            if (result === "success") {
+                                // Reload trang để load dữ liệu mới
+                                location.reload();
+                            } else {
+                                alert("Error while skipping data.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert("Error while skipping data.");
+                        });
+                });
+            }
+        });
+    </script>
 </head>
 
 <body>
@@ -73,6 +101,8 @@
                 <div class="centered-buttons">
                     <!-- Thêm button "Save" -->
                     <button type="submit" form="main_form" name="save_button" value="save">Save</button>
+                    <!-- Thêm button "Skip" -->
+                    <button type="submit" form="main_form" name="skip_button" value="skip">Skip</button>
                     <!-- Thêm button "Log" -->
                     <a href="{{ url_for('log') }}" class="log-button">Log</a>
                 </div>

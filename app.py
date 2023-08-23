@@ -75,6 +75,18 @@ def login():
 
     return render_template('login.html', error=None)
 
+@app.route('/skip/<message_id>', methods=['POST'])
+def skip_data(message_id):
+    try:
+        # Cập nhật trạng thái "skip" và thời gian sửa đổi trong bảng log_instruction_dataset
+        update_data_status(request.form['message_id'], 'skip', session.get('phone_number'))
+
+        return "success"  # Trả về thông báo thành công
+    except Exception as e:
+        print("Error while skipping data:", e)
+        return "error"  # Trả về thông báo lỗi nếu có lỗi xảy ra
+
+
 @app.route('/main', methods=['GET', 'POST'])
 def main():
     if not session.get('logged_in'):
