@@ -79,7 +79,7 @@ def login():
 def skip_data(message_id):
     try:
         # Cập nhật trạng thái "skip" và thời gian sửa đổi trong bảng log_instruction_dataset
-        update_data_status(request.form['message_id'], 'skip', session.get('phone_number'))
+        update_data_status(message_id, 'skip', session.get('phone_number'))
 
         return "success"  # Trả về thông báo thành công
     except Exception as e:
